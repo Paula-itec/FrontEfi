@@ -1,0 +1,4 @@
+export const GET_ALL_TASK = 'GET_ALL_TASK'
+export const GET_ALL_LIST = 'GET_ALL_LIST'
+export const ERROR_LIST_MODULE = 'ERROR_LIST_MODULE'
+export const CREATE_LIST = 'CREATE_LIST'

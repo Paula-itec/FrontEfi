@@ -4,7 +4,7 @@ import {useStyle} from './Styled';
 // import MoreHorizIcon from '@material-ui/core/icons/MoreHoriz';
 import storeApi from '../../utils/storeApi';
 
-export default function Title({ title, listId }) {
+export default function Title({ title, list_id }) {
     const [open, setOpen] = useState(false);
     const [newTitle, setNewTitle] = useState(title);
     const { updateListTitle } = useContext(storeApi);
@@ -14,7 +14,7 @@ export default function Title({ title, listId }) {
     };
 
     const handleOnBlur = () => {
-        updateListTitle(newTitle, listId);
+        updateListTitle(newTitle, list_id);
         setOpen(false);
     };
     return (

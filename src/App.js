@@ -1,181 +1,35 @@
-
-// import { v4 as uuid } from 'uuid';
-// import React,{useState} from "react";
-// import List from './components/List/List';
-// import store from './utils/store';
-// import StoreApi from './utils/storeApi';
-// import InputContainer from './components/Input/InputContainer/Index';
-// import  {makeStyles}  from "@material-ui/core";
-// import { DragDropContext,Droppable } from "react-beautiful-dnd";
-// import TopBar from './components/TopBar';
-// import SideMenu from './components/SideMenu';
-import React, { useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import List from '../src/components/List/List';
-import store from './utils/store';
-import StoreApi from './utils/storeApi';
-import InputContainer from '../src/components/InputContainer/InputContainer';
-import { makeStyles } from '@material-ui/core/styles';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import TopBar from '../src/components/TopBar/TopBar';
-import SideMenu from '../src/components/SideMenu/SideMenu';
-
-
-
-const useStyle = makeStyles((theme) => ({
-  root: {
-    minHeight: '100vh',
-    background: 'green',
-    width: '100%',
-    overflowY: 'auto',
-  },
-  listContainer: {
-    display: 'flex',
-  },
-}));
-
-export default function App() {
-  const [data, setData] = useState(store);
-  const [open, setOpen] = useState(false);
-
-  const [backgroundUrl, setBackgroundUrl] = useState('');
-  const classes = useStyle();
-  const AgregarMasCard = (title, listId) => {
-    console.log(title, listId);
-
-    const newCardId = uuid();
-    const newCard = {
-      id: newCardId,
-      title,
-    };
-
-    const list = data.lists[listId];
-    list.cards = [...list.cards, newCard];
-
-    const newState = {
-      ...data,
-      lists: {
-        ...data.lists,
-        [listId]: list,
-      },
-    };
-    setData(newState);
-  };
-
-  const AgregarOtraLista = (title) => {
-    const newListId = uuid();
-    const newList = {
-      id: newListId,
-      title,
-      cards: [],
-    };
-    const newState = {
-      listIds: [...data.listIds, newListId],
-      lists: {
-        ...data.lists,
-        [newListId]: newList,
-      },
-    };
-    setData(newState);
-  };
-
-  const updateListTitle = (title, listId) => {
-    const list = data.lists[listId];
-    list.title = title;
-
-    const newState = {
-      ...data,
-      lists: {
-        ...data.lists,
-        [listId]: list,
-      },
-    };
-    setData(newState);
-  };
-
-  const onDragEnd = (result) => {
-    const { destination, source, draggableId, type } = result;
-    console.log('destination', destination, 'source', source, draggableId);
-
-    if (!destination) {
-      return;
-    }
-    if (type === 'list') {
-      const newListIds = data.listIds;
-      newListIds.splice(source.index, 1);
-      newListIds.splice(destination.index, 0, draggableId);
-      return;
-    }
-
-    const sourceList = data.lists[source.droppableId];
-    const destinationList = data.lists[destination.droppableId];
-    const draggingCard = sourceList.cards.filter(
-      (card) => card.id === draggableId
-    )[0];
-
-    if (source.droppableId === destination.droppableId) {
-      sourceList.cards.splice(source.index, 1);
-      destinationList.cards.splice(destination.index, 0, draggingCard);
-      const newSate = {
-        ...data,
-        lists: {
-          ...data.lists,
-          [sourceList.id]: destinationList,
-        },
-      };
-      setData(newSate);
-    } else {
-      sourceList.cards.splice(source.index, 1);
-      destinationList.cards.splice(destination.index, 0, draggingCard);
-
-      const newState = {
-        ...data,
-        lists: {
-          ...data.lists,
-          [sourceList.id]: sourceList,
-          [destinationList.id]: destinationList,
-        },
-      };
-      setData(newState);
-    }
-  };
+import React, { useContext, Fragment } from "react"
+import SignInSide from "./components/Auth/Login"
+import { BrowserRouter, Routes, Route} from "react-router-dom"
+import PrivateRoute from "./components/Routes/PrivateRoute"
+import PublicRoute from "./components/Routes/PublicRoute"
+import Layout from "./components/Layout"
+import { AuthContext } from "./components/Context/AuthContext"
+import DashBoard from "./components/DashBoard/Dashboard"
+function App() {
+  const [state, setState] = useContext(AuthContext)
 
   return (
-    <StoreApi.Provider value={{ AgregarMasCard, AgregarOtraLista, updateListTitle }}>
-      <div
-        className={classes.root}
-        style={{
-          backgroundImage: `url(${backgroundUrl})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        <TopBar setOpen={setOpen} />
-
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="app" type="list" direction="horizontal">
-            {(provided) => (
-              <div
-                className={classes.listContainer}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {data.listIds.map((listId, index) => {
-                  const list = data.lists[listId];
-                  return <List list={list} key={listId} index={index} />;
-                })}
-                <InputContainer type="list" ></InputContainer>
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-        <SideMenu
-          setBackgroundUrl={setBackgroundUrl}
-          open={open}
-          setOpen={setOpen}
-        />
-      </div>
-    </StoreApi.Provider>
-  );
+    <BrowserRouter>
+    <Fragment>
+      <Layout>
+        <Routes>
+        <Route exact path="/login" element={<SignInSide/>} />
+        <Route exact path='/' element={<PrivateRoute isAuthenticated={state.isAuthenticated} />} >
+            <Route exact path='/' element={<DashBoard />}/>
+        </Route>
+        {/* <PrivateRoute
+          values={state}
+          exact
+          path="/"
+          component={DashBoard}
+          to="/login"
+        /> */}
+        </Routes>
+      </Layout>
+      </Fragment>
+    </BrowserRouter>
+  )
 }
+
+export default App

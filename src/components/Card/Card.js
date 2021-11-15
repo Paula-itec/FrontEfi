@@ -1,9 +1,9 @@
 import React from 'react';
-import {paper} from "@material-ui/core";
+import { paper } from "@material-ui/core";
 import { useStyle } from './Styled';
-import {Draggable} from "react-beautiful-dnd";
+import { Draggable } from "react-beautiful-dnd";
 
-export default function Card ({card,index}){
+const Card= ({card,index}) => {
     const classes = useStyle();
 
 
@@ -22,3 +22,5 @@ export default function Card ({card,index}){
         </Draggable>
     );
 }
+
+export default Card;

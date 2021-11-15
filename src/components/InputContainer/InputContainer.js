@@ -4,7 +4,7 @@ import InputCard from '../InputCard/InputCard';
 import { useStyle } from './Styled';
 
 
-export default function InputContainer({listId,type}){
+const InputContainer =({listId,type}) => {
     const classes = useStyle();
     const [open,setOpen]=useState(false);
     return(
@@ -28,3 +28,5 @@ export default function InputContainer({listId,type}){
         </div>
     );
 }
+
+export default InputContainer;
